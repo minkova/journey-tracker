@@ -7,4 +7,4 @@
 * npm install
 * gulp
 
-Check out project on [http://localhost:8000](http://localhost:8000) with web browser of your choise
+Check out the project on [http://localhost:8000](http://localhost:8000)
