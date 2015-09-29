@@ -1,0 +1,24 @@
+{
+  "name": "journey-tracker",
+  "version": "1.0.0",
+  "description": "Journey Tracker education project",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/minkova/journey-tracker.git"
+  },
+  "author": "Tetiana Minkova",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/minkova/journey-tracker/issues"
+  },
+  "homepage": "https://github.com/minkova/journey-tracker#readme",
+  "devDependencies": {
+    "del": "^2.0.2",
+    "gulp": "3.8.0",
+    "gulp-webserver": "^0.9.1"
+  }
+}

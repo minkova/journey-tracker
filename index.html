@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Journey tracker</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.indigo-pink.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+<div class="mdl-layout__container">
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-drawer">
+        <header class="mdl-layout__header">
+            <div class="mdl-layout__header-row">
+                <div>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--align-right">
+                        <input class="mdl-textfield__input" type="text" id="search_box"
+                               data-bind='value: searchText, valueUpdate: "input"'/>
+                        <label class="mdl-textfield__label" for="search_box">Search...</label>
+                    </div>
+                </div>
+                <div class="mdl-layout-spacer"></div>
+                <nav class="mdl-navigation mdl-layout--large-screen-only">
+                    <a class="mdl-navigation__link" href="http://github.com">Github</a>
+                </nav>
+            </div>
+        </header>
+        <div class="mdl-layout__drawer">
+            <span class="mdl-layout-title">Places</span>
+
+            <nav class="mdl-navigation" data-bind="with: list">
+                <div class="mdl-grid" data-bind="foreach: items" id="places-list">
+                    <div class="mdl-cell mdl-cell--12-col mdl-cell--middle">
+
+                        <div class="mdl-card london-eye-pic mdl-shadow--3dp jp-place-card"
+                             data-bind="css: { selected: selected }">
+                            <div class="mdl-card__title"
+                                 data-bind="click: $parent.selectPlace, style: { background: 'url(\'' + img() + '\') center / cover' }">
+                                <h2 class="mdl-card__title-text" data-bind="text: name"></h2>
+                            </div>
+                            <div class="mdl-card__supporting-text">
+                                <div data-bind="text: description"></div>
+                                <!-- <div style="margin-top: 4px;">
+                                     <i class="material-icons" style="font-size: 14px">account_balance</i>
+                                     <span data-bind="text: address"></span>
+                                 </div>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <main class="docs-layout-content mdl-layout__content mdl-color-text--grey-600" id="map"></main>
+        <div id="popup" class="demo-card-wide mdl-card mdl-shadow--4dp mdl-js-ripple-effect" for="showPopup" data-bind="with: card, visible: card.visible()">
+            <div class="mdl-card__title">
+                <h1 class="mdl-card__title-text" data-bind="text: name"></h1>
+            </div>
+            <div class="mdl-card__title img-in-title">
+                <img data-bind="attr: { src: img() }" alt=" "/>
+            </div>
+            <div class="mdl-card__supporting-text" data-bind="text: description"></div>
+            <div class="mdl-card__actions mdl-card--border">
+                <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                    <div class="mdl-tabs__tab-bar">
+                        <a href="#wiki-panel" class="mdl-tabs__tab is-active">Wiki</a>
+                        <a href="#flickr-panel" class="mdl-tabs__tab">Flickr</a>
+                        <a href="#yelp-panel" class="mdl-tabs__tab">Yelp</a>
+                    </div>
+                    <div class="mdl-tabs__panel is-active" id="wiki-panel">
+                        <ul data-bind="foreach: wikiItems">
+                            <li>
+                                <a data-bind="text: title, attr: { href: url }"></a>
+                            </li>
+                        </ul>
+                        <div class="no-result" data-bind="visible: wikiLoadResultVisible, text: wikiLoadResult"></div>
+                    </div>
+                    <div class="mdl-tabs__panel" id="flickr-panel">
+                        <ul data-bind="foreach: flickrItems">
+                            <li>
+                                <a data-bind="attr: { href: webUrl }">
+                                    <img class="mdl-shadow--2dp" data-bind="attr: { src: imgUrl }" />
+                                </a>
+                            </li>
+                        </ul>
+                        <div data-bind="visible: flickrLoadResultVisible, text: flickrLoadResult"></div>
+                    </div>
+                    <div class="mdl-tabs__panel" id="yelp-panel">
+                        <ul data-bind="foreach: fourItems">
+                            <li>
+                                <a data-bind="text: name, attr: { href: url }"></a>
+                            </li>
+                        </ul>
+                        <div data-bind="visible: fourLoadResultVisible, text: fourLoadResult"></div>
+                    </div>
+                </div>
+                <button id="closebtn" class="mdl-button mdl-js-button mdl-button--icon" data-bind="click: close">
+                    <i class="material-icons wsk-icon--close" role="presentation">close</i>
+                </button>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.min.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js"></script>
+<script src="index.js"></script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRnAriCQzO7HGIt55891JfgCsvmVafyM8&callback=jp.init"></script>
+</body>
+</html>

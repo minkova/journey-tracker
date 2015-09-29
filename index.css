@@ -1,0 +1,36 @@
+#map { height: 100%; }
+header .mdl-textfield__label {color: #9CA7E6;}
+.no-result {font-size: 12px; padding-left: 10px;}
+.jp-place-card.mdl-card {
+    width: 100%;
+    color: #eee;
+}
+.jp-place-card .mdl-card__title {
+    color: #fff;
+    height: 170px;
+    cursor: pointer;
+}
+.jp-place-card.mdl-card.selected {
+    background-color: #ccc;
+}
+#popup {
+    z-index: 1000;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    padding-bottom: 20px;
+}
+#popup .mdl-card__title.img-in-title {padding-top: 0;}
+#popup ul {
+    -webkit-margin-before: 10px;
+    -webkit-padding-start: 10px;
+}
+
+#closebtn {position: absolute; right: 20px; top: 20px;}
+#flickr-panel li {float: left; margin: 5px; list-style: none;}
+#wiki-panel li, #yelp-panel li {list-style: none; line-height: 20px;}
+#wiki-panel li a, #yelp-panel li a {color: #9CA7E6; text-decoration: none;}
+#wiki-panel li a:hover, #yelp-panel li a:hover,
+#wiki-panel li a:visited, #yelp-panel li a:visited{color: darkslateblue;}
