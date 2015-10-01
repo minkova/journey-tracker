@@ -193,7 +193,7 @@ $(function(global) {
             global.jp.dataService.getPlace(placeId, function(err, place) {
                 self.card.show(place);
             });
-        }
+        };
     }
 
     PageViewModel.prototype.loadPlaces = function(searchText) {
@@ -285,15 +285,16 @@ $(function(global) {
                 label: place.name
             });
 
-            marker.addListener('click', function() {
-                var currentMarker = this;
-                self.activateMarker(currentMarker.place.id, function() {
-                    self.parent.showPlaceCard(currentMarker.place.id);
-                });
-            }.bind(marker));
-
+            marker.addListener('click', markerOnClick.bind(marker));
             marker.place = place;
             self.markers.push(marker);
+        }
+
+        function markerOnClick() {
+            var placeId = this.place.id;
+            self.activateMarker(placeId, function() {
+                self.parent.showPlaceCard(placeId);
+            });
         }
     };
 

@@ -5,6 +5,9 @@
 * git clone https://github.com/minkova/journey-tracker.git
 * cd journey-tracker
 * npm install
+* npm install -g gulp
 * gulp
 
 Check out project on [http://localhost:8000](http://localhost:8000) with web browser of your choise
+
+Or just go
