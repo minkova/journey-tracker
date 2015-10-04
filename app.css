@@ -1,7 +1,6 @@
 #map { height: 100%; }
 header .mdl-textfield__label {color: #9CA7E6;}
 .no-result {font-size: 12px; padding-left: 10px;}
-.mdl-layout__drawer {overflow-y: scroll;}
 .jp-place-card.mdl-card {
     width: 100%;
     color: #eee;
