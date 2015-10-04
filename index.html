@@ -30,24 +30,26 @@
         </header>
         <div class="mdl-layout__drawer">
             <span class="mdl-layout-title">Places</span>
-
             <nav class="mdl-navigation" data-bind="with: list">
                 <div class="mdl-grid" data-bind="foreach: items" id="places-list">
                     <div class="mdl-cell mdl-cell--12-col mdl-cell--middle">
 
                         <div class="mdl-card london-eye-pic mdl-shadow--3dp jp-place-card"
                              data-bind="css: { selected: selected }">
-                            <div class="mdl-card__title"
+                            <div class="mdl-card__title" data-bind="click: $parent.selectPlace">
+                                <h2 class="mdl-card__title-text" data-bind="text: name"></h2>
+                            </div>
+                            <!--<div class="mdl-card__title"
                                  data-bind="click: $parent.selectPlace, style: { background: 'url(\'' + img() + '\') center / cover' }">
                                 <h2 class="mdl-card__title-text" data-bind="text: name"></h2>
                             </div>
-                            <div class="mdl-card__supporting-text">
-                                <div data-bind="text: description"></div>
-                                <!-- <div style="margin-top: 4px;">
-                                     <i class="material-icons" style="font-size: 14px">account_balance</i>
-                                     <span data-bind="text: address"></span>
-                                 </div>-->
-                            </div>
+                            <!-- <div class="mdl-card__supporting-text">
+                                 <div data-bind="text: description"></div>
+                                  <div style="margin-top: 4px;">
+                                      <i class="material-icons" style="font-size: 14px">account_balance</i>
+                                      <span data-bind="text: address"></span>
+                                  </div>
+                            </div>-->
                         </div>
                     </div>
                 </div>

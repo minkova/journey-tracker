@@ -5,29 +5,59 @@ $(function(global) {
     global.jp.init = init;
     global.jp.dataService = new DataService();
 
-    function DataService() {}
+    function DataService() {
+        this.places = [
+            {
+                "id": 1,
+                "name": "London eye",
+                "description": "At 135m, Coca-Cola London Eye is the world’s largest cantilevered observation wheel.",
+                "address": "London SE1 7PB, England, United Kingdom",
+                "location": "51.503325,-0.119543",
+                "img": "img/london_eye.png"
+            }, {
+                "id": 2,
+                "name": "Tate modern",
+                "description": "Tate Modern is a modern art gallery located in London.",
+                "address": "Bankside, London SE1, England, United Kingdom",
+                "location": "51.507625,-0.098970",
+                "img": "img/tate_modern.png"
+            }, {
+                "id": 3,
+                "name": "Royal Observatory Greenwich",
+                "description": "Wren's 18th-century astronomical observatory on the Prime Meridian, now a museum with a planetarium.",
+                "address": "Blackheath Ave London SE10 8XJ, England, United Kingdom",
+                "location": "51.4769782,0.0",
+                "img": "img/greenwich.png"
+            }, {
+                "id": 4,
+                "name": "Buckingham Palace",
+                "description": "Buckingham Palace is the London residence and principal workplace of the monarchy of the United Kingdom.",
+                "address": "City of Westminster, London, England, United Kingdom",
+                "location": "51.500833,-0.141944",
+                "img": "img/buckingham_palace.png"
+            }, {
+                "id": 6,
+                "name": "Tower Bridge",
+                "description": "Tower Bridge (built 1886-1894) is a combined bascule and suspension bridge in London.",
+                "address": "",
+                "location": "51.50548,-0.07548",
+                "img": "img/tower_bridge.png"
+            }, {
+                "id": 7,
+                "name": "Hyde Park",
+                "description": "Hyde Park is one of the largest parks in London, and one of the Royal Parks of London, famous for its Speakers' Corner.",
+                "address": "Westminster in London, England",
+                "location": "51.508611,-0.163611",
+                "img": "img/hyde_park.png"
+            }
+        ];
+    }
 
     // Load places from data source (JSON file)
     DataService.prototype.getPlaces = function(searchText, callback) {
         var self = this;
-        // Check if places already cached
-        if (!this.places || this.places.length <= 0) {
-            $.getJSON('places.json')
-                .done(function(data) {
-                    // Populate cache
-                    self.places = data;
-                    var filteredPlaces = applySearchFilter(searchText);
-                    callback(null, filteredPlaces);
-                })
-                .fail(function(jqxhr, textStatus, error) {
-                    console.log(error);
-                    callback(error);
-                });
-        } else {
-            // Places already cache
-            var filteredPlaces = applySearchFilter(searchText);
-            callback(null, filteredPlaces);
-        }
+        var filteredPlaces = applySearchFilter(searchText);
+        callback(null, filteredPlaces);
 
         function applySearchFilter(searchText) {
             if (!searchText) {
@@ -47,7 +77,7 @@ $(function(global) {
                 }
                 if (place.address.toLowerCase().indexOf(searchText) >= 0) {
                     results.push(place);
-                    continue;
+
                 }
             }
 
@@ -58,25 +88,8 @@ $(function(global) {
     // Get place object by Id
     DataService.prototype.getPlace = function(placeId, callback) {
         var self = this;
-        // Check if places already cached
-        if (!this.places || this.places.length <= 0) {
-            // Places cache is empty, populate it
-            $.getJSON('places.json')
-                .done(function(data) {
-                    // Populate cache
-                    self.places = data;
-                    var place = findPlaceById(placeId);
-                    callback(null, place);
-                })
-                .fail(function(jqxhr, textStatus, error) {
-                    console.log(error);
-                    callback(error);
-                });
-        } else {
-            // Places already cache, search for it
-            var place = findPlaceById(placeId);
-            callback(null, place);
-        }
+        var place = findPlaceById(placeId);
+        callback(null, place);
 
         function findPlaceById(placeId) {
             for(var i in self.places) {
@@ -227,7 +240,9 @@ $(function(global) {
                 drawer.removeClass('is-visible');
             }
 
-            self.parent.map.activateMarker(place.id());
+            self.parent.map.activateMarker(place.id(), function() {
+                self.parent.showPlaceCard(place.id());
+            });
         };
     }
 
