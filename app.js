@@ -64,18 +64,19 @@ $(function(global) {
                 return self.places;
             }
 
+            var localSearchText = searchText.toLowerCase();
             var results = [];
             for(var i in self.places) {
                 var place = self.places[i];
-                if (place.name.toLowerCase().indexOf(searchText) >= 0) {
+                if (place.name.toLowerCase().indexOf(localSearchText) >= 0) {
                     results.push(place);
                     continue;
                 }
-                if (place.description.toLowerCase().indexOf(searchText) >= 0) {
+                if (place.description.toLowerCase().indexOf(localSearchText) >= 0) {
                     results.push(place);
                     continue;
                 }
-                if (place.address.toLowerCase().indexOf(searchText) >= 0) {
+                if (place.address.toLowerCase().indexOf(localSearchText) >= 0) {
                     results.push(place);
 
                 }
