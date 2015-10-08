@@ -12,15 +12,12 @@ header .mdl-textfield__label {color: #9CA7E6;}
     min-height: 30px;
     cursor: pointer;
 }
-.mdl-layout__drawer .mdl-card__title {
-    padding: 10px 16px;}
+.mdl-layout__drawer .mdl-card__title {padding: 10px 16px;}
 .mdl-layout__drawer .mdl-card__title-text{
     font-size: 14px;
     line-height: 14px;
 }
-.jp-place-card.mdl-card.selected {
-    background-color: #ccc;
-}
+.jp-place-card.mdl-card.selected {background-color: #ccc;}
 #popup {
     z-index: 1000;
     position: absolute;
@@ -37,8 +34,13 @@ header .mdl-textfield__label {color: #9CA7E6;}
 }
 
 #closebtn {position: absolute; right: 20px; top: 20px;}
-#flickr-panel li {float: left; margin: 5px; list-style: none;}
-#wiki-panel li, #yelp-panel li {list-style: none; line-height: 20px;}
-#wiki-panel li a, #yelp-panel li a {color: #9CA7E6; text-decoration: none;}
-#wiki-panel li a:hover, #yelp-panel li a:hover,
-#wiki-panel li a:visited, #yelp-panel li a:visited{color: darkslateblue;}
+#flickr-panel li {float: left; margin: 5px;}
+.mdl-tabs__panel li {list-style: none; line-height: 20px;}
+.mdl-tabs__panel li a {color: #9CA7E6; text-decoration: none;}
+.mdl-tabs__panel a:hover, .mdl-tabs__panel li a:visited{color: darkslateblue;}
+.error-text {
+    font-size: 18px;
+    line-height: 24px;
+    padding: 50px 10px 0 30px;
+    color: darkslateblue;
+}

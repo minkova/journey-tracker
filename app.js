@@ -1,10 +1,6 @@
 $(function(global) {
     'use strict';
 
-    global.jp = global.jp || {};
-    global.jp.init = init;
-    global.jp.dataService = new DataService();
-
     function DataService() {
         this.places = [
             {
@@ -53,7 +49,11 @@ $(function(global) {
         ];
     }
 
-    // Load places from data source (JSON file)
+    /**
+     * Load places from data source. Search filter applies if search text non-falsy string.
+     * @param {string} searchText - string that will be used for search by name and descriptions fields of places objects.
+     * @param {string} callback - function which will be called at the end of operation.
+     */
     DataService.prototype.getPlaces = function(searchText, callback) {
         var self = this;
         var filteredPlaces = applySearchFilter(searchText);
@@ -66,40 +66,40 @@ $(function(global) {
 
             var localSearchText = searchText.toLowerCase();
             var results = [];
-            for(var i in self.places) {
-                var place = self.places[i];
+            self.places.forEach(function(place) {
                 if (place.name.toLowerCase().indexOf(localSearchText) >= 0) {
                     results.push(place);
-                    continue;
+                    return;
                 }
                 if (place.description.toLowerCase().indexOf(localSearchText) >= 0) {
                     results.push(place);
-                    continue;
+                    return;
                 }
                 if (place.address.toLowerCase().indexOf(localSearchText) >= 0) {
                     results.push(place);
-
                 }
-            }
+            });
 
             return results;
         }
     };
 
-    // Get place object by Id
+    /**
+     * Get place object by id
+     * @param {number} placeId - integer unique place identifier
+     * @param {function} callback - function which will be called at the end of operation.
+     */
     DataService.prototype.getPlace = function(placeId, callback) {
         var self = this;
-        var place = findPlaceById(placeId);
-        callback(null, place);
-
-        function findPlaceById(placeId) {
-            for(var i in self.places) {
-                var place = self.places[i];
-                if (place.id === placeId) {
-                    return place;
-                }
+        var result;
+        for (var i=0; i < self.places.length; i++) {
+            if (self.places[i].id === placeId) {
+                result = self.places[i];
+                break;
             }
         }
+
+        callback(null, result);
     };
 
     // Load data about place from Wikipedia
@@ -121,9 +121,8 @@ $(function(global) {
 
                 callback(null, results);
             },
-            error: function(jqxhr, textStatus, error) {
-                console.log(error);
-                callback(error);
+            error: function() {
+                callback(new Error('Errors occurred while loading data from wikipedia.'));
             }
         });
     };
@@ -134,21 +133,18 @@ $(function(global) {
         $.getJSON(url)
             .done(function(data) {
                 var results = [];
-                var venues = data.response.venues;
-                for(var i in venues) {
-                    var venue = venues[i];
+                data.response.venues.forEach(function(venue) {
                     results.push({
                         name: venue.name,
                         phone: (venue.contact ? venue.contact.formattedPhone : ''),
                         url: 'https://foursquare.com/v/foursquare-hq/' + venue.id,
                         id: venue.id
                     });
-                }
+                });
                 callback(null, results);
             })
-            .fail(function(jqxhr, textStatus, error) {
-                console.log(error);
-                callback(error);
+            .fail(function() {
+                callback(new Error('Errors occurred while loading data from foursquare.'));
             });
     };
 
@@ -161,22 +157,18 @@ $(function(global) {
         $.getJSON(url)
             .done(function(data) {
                 var results = [];
-                var photos = data.photos.photo;
-                for(var i in photos) {
-                    var photo = photos[i];
+                data.photos.photo.forEach(function(photo) {
                     results.push({
                         imgUrl: photo.url_q,
                         ownerId: photo.owner,
                         id: photo.id,
                         webUrl: 'https://www.flickr.com/photos/' + photo.owner + '/' + photo.id + '/'
                     });
-                }
-
+                });
                 callback(null, results);
             })
-            .fail(function(jqxhr, textStatus, error) {
-                console.log(error);
-                callback(error);
+            .fail(function() {
+                callback(new Error('Errors occurred while loading data from flickr.'));
             });
     };
 
@@ -249,10 +241,10 @@ $(function(global) {
 
     ListViewModel.prototype.loadPlaces = function(places) {
         this.items.removeAll();
-        for(var i in places) {
-            var place = places[i];
-            this.items.push(new PlaceViewModel(place));
-        }
+        var self = this;
+        places.forEach(function(place) {
+            self.items.push(new PlaceViewModel(place));
+        });
     };
 
     function PlaceViewModel(place) {
@@ -272,29 +264,57 @@ $(function(global) {
 
     function MapViewModel(parent) {
         this.parent = parent;
+        this.errorText = ko.observable('');
         this.activeMarker = undefined;
+        // Store places to use them after map is loaded
+        this.places = [];
         this.markers = [];
+        this.mapLoaded = false;
+
+        var self = this;
+        // Set timeout for g-map loaded or not, if not show message
+        self.mapTimeoutFunc = setTimeout(function() {
+            self.errorText("Sorry, it seems map couldn't be loaded this time. Please try a bit later.");
+        }, 5000);
+    }
+
+    MapViewModel.prototype.init = function() {
         this.map = new google.maps.Map(document.getElementById('map'), {
             center: {lat: 51.4841204, lng: -0.0955061},
             zoom: 11
         });
-    }
+        this.mapLoaded = true;
+        this.setMarkers();
+    };
 
     MapViewModel.prototype.loadPlaces = function(places) {
 
         var self = this;
-        for(var mi in self.markers) {
-            self.markers[mi].setMap(null);
+        self.places = places;
+
+        if (self.mapLoaded) {
+            self.setMarkers();
         }
+    };
 
-        self.markers = [];
+    MapViewModel.prototype.setMarkers = function() {
+        var self = this;
+        self.markers.forEach(function(marker) {
+            marker.setVisible(false);
+        });
 
-        for(var i in places) {
-            var place = places[i];
+        self.places.forEach(function(place) {
+            // To avoid adding existing on the map markers
+            var marker = getExistingMarker(self.markers, place);
+            if (marker) {
+                marker.setVisible(true);
+                return;
+            }
+
             var locParts = place.location.split(',');
             var markerCoords = { lat: parseFloat(locParts[0]), lng: parseFloat(locParts[1]) };
 
-            var marker = new google.maps.Marker({
+            marker = new google.maps.Marker({
                 map: self.map,
                 position: markerCoords,
                 title: place.name,
@@ -304,13 +324,21 @@ $(function(global) {
             marker.addListener('click', markerOnClick.bind(marker));
             marker.place = place;
             self.markers.push(marker);
-        }
+        });
 
         function markerOnClick() {
-            var placeId = this.place.id;
-            self.activateMarker(placeId, function() {
-                self.parent.showPlaceCard(placeId);
+            var markerPlaceId = this.place.id;
+            self.activateMarker(markerPlaceId, function() {
+                self.parent.showPlaceCard(markerPlaceId);
             });
+        }
+
+        function getExistingMarker(markers, place) {
+            for(var i =0; i < markers.length; i++) {
+                if (markers[i].place && markers[i].place.id === place.id) {
+                    return markers[i];
+                }
+            }
         }
     };
 
@@ -318,7 +346,7 @@ $(function(global) {
 
         var marker;
         // Search for marker by place Id
-        for(var i in this.markers) {
+        for (var i=0; i < this.markers.length; i++) {
             if (this.markers[i].place.id === placeId) {
                 marker = this.markers[i];
                 break;
@@ -425,11 +453,9 @@ $(function(global) {
                 return;
             }
 
-            console.log(photos);
-
-            for(var i in photos) {
-                self.flickrItems.push(photos[i]);
-            }
+            photos.forEach(function(photo) {
+                self.flickrItems.push(photo);
+            });
         });
 
         global.jp.dataService.getWikiData(place, function(err, articles) {
@@ -445,11 +471,9 @@ $(function(global) {
                 return;
             }
 
-            console.log(articles);
-
-            for(var i in articles) {
-                self.wikiItems.push(articles[i]);
-            }
+            articles.forEach(function(article) {
+                self.wikiItems.push(article);
+            });
         });
 
         global.jp.dataService.getFoursquareData(place, function(err, venues) {
@@ -465,20 +489,26 @@ $(function(global) {
                 return;
             }
 
-            console.log(venues);
-
-            for(var i in venues) {
-                self.fourItems.push(venues[i]);
-            }
+            venues.forEach(function(vanue) {
+                self.fourItems.push(vanue);
+            });
         });
     };
 
-    function init() {
-        // Set global default timeout value for ajax requests
-        $.ajaxSetup({ timeout: 5000 });
+    // Set global default timeout value for ajax requests
+    $.ajaxSetup({ timeout: 5000 });
 
-        global.jp.pageViewModel = new PageViewModel();
-        ko.applyBindings(global.jp.pageViewModel);
-        global.jp.pageViewModel.loadPlaces();
-    }
+    global.jp = global.jp || {};
+    global.jp.dataService = new DataService();
+
+    var pageViewModel = new PageViewModel();
+    global.jp.pageViewModel = pageViewModel;
+    ko.applyBindings(pageViewModel);
+    pageViewModel.loadPlaces();
+
+    global.jp.onMapLoaded = function() {
+        clearTimeout(global.jp.pageViewModel.map.mapTimeoutFunc);
+        global.jp.pageViewModel.map.init();
+    };
+
 }(window));
